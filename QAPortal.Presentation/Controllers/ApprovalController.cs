@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QAPortal.Business.Services;
 using QAPortal.Data.Enums;
@@ -14,6 +15,7 @@ public class ApprovalController : ControllerBase
     {
         _approvalService = approvalService;
     }
+
 
     [HttpPost]
     public async Task<IActionResult> ApproveUser([FromBody] ApprovalRequestDto approvalDto)
@@ -49,6 +51,7 @@ public class ApprovalController : ControllerBase
     }
 
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("revoke/{requestId}/{approvedBy}")]
     public async Task<IActionResult> ToggleApproval(int requestId, int approvedBy)
     {
@@ -75,6 +78,7 @@ public class ApprovalController : ControllerBase
         return Ok(approvalDtos);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("reject/{requestId}")]
     public async Task<IActionResult> RejectApproval(int requestId)
     {

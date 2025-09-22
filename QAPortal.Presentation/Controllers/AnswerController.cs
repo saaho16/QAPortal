@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QAPortal.Business.Services;
 using QAPortal.Shared.DTOs.QADtos;
@@ -31,6 +32,8 @@ public class AnswerController : ControllerBase
         System.Console.WriteLine(answers);
         return Ok(answers);
     }
+    
+    [Authorize(Roles = "Admin,User")]
     [HttpPost]
     public async Task<IActionResult> CreateAnswer([FromBody] AnswerRequestDto answerDto)
     {
@@ -64,6 +67,8 @@ public class AnswerController : ControllerBase
         return Ok(updatedAnswer);
     }
 
+    
+    [Authorize(Roles = "Admin,User")]
     [HttpDelete("{answerId}/{userId}")]
     public async Task<IActionResult> DeleteAnswer(int answerId, int userId)
     {
@@ -98,6 +103,13 @@ public class AnswerController : ControllerBase
     public async Task<IActionResult> GetAllAnswersWithQuestionNUser()
     {
         var answers = await _answerService.GetAllAnswersWithQuestionNUserAsync();
+        return Ok(answers);
+    }
+
+    [HttpGet("withQuestionNUser/{userId}")]
+    public async Task<IActionResult> GetAnswerWithQuestionNUserByUserId(int userId)
+    {
+        var answers = await _answerService.GetAnswerWithQuestionNUserByUserIdAsync(userId);
         return Ok(answers);
     }
 

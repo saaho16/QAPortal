@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QAPortal.Business.Services;
 using QAPortal.Shared.DTOs.QADtos;
@@ -26,11 +28,14 @@ public class QuestionController : ControllerBase
         return Ok(question);
     }
     [HttpGet]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> GetAllQuestions()
     {
         var questions = await _questionService.GetAllQuestionsAsync();
         return Ok(questions);
     }
+
+    [Authorize(Roles = "Admin,User")]
     [HttpPost]
     public async Task<IActionResult> CreateQuestion([FromBody] QuestionRequestDto questionDto, [FromQuery] int userId)
     {
@@ -43,6 +48,7 @@ public class QuestionController : ControllerBase
         return CreatedAtAction(nameof(GetQuestionById), new { questionId = createdQuestion.Id }, createdQuestion);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{questionId}")]
     public async Task<IActionResult> UpdateQuestion(int questionId, [FromBody] QuestionRequestDto questionDto)
     {
@@ -60,6 +66,7 @@ public class QuestionController : ControllerBase
         return Ok(updatedQuestion);
     }
 
+    [Authorize(Roles = "Admin,User")]
     [HttpDelete("{questionId}/{userId}")]
     public async Task<IActionResult> DeleteQuestion(int questionId, int userId)
     {
@@ -71,6 +78,8 @@ public class QuestionController : ControllerBase
         return NoContent();
     }
 
+
+    [Authorize(Roles = "Admin")]
     [HttpPut("end/{questionId}/{userId}")]
     public async Task<IActionResult> EndQuestion(int questionId, int userId)
     {
@@ -89,18 +98,19 @@ public class QuestionController : ControllerBase
         return Ok(questions);
     }
 
+    [AllowAnonymous]
     [HttpGet("questionWithUser")]
-    public IActionResult GetAllQuestionsWithUser()
+    public async Task<IActionResult> GetAllQuestionsWithUser()
     {
-        var questionsWithUser = _questionService.GetAllQuestionsWithUserAsync();
+        var questionsWithUser = await _questionService.GetAllQuestionsWithUserAsync();
         return Ok(questionsWithUser);
     }
 
 
     [HttpGet("questionWithAnswers")]
-    public IActionResult GetAllQuestionsWithAnswers()
+    public async Task<IActionResult> GetAllQuestionsWithAnswers()
     {
-        var questionsWithAnswers = _questionService.GetAllQuestionsWithAnswersAsync();
+        var questionsWithAnswers = await _questionService.GetAllQuestionsWithAnswersAsync();
         return Ok(questionsWithAnswers);
     }
 

@@ -1,4 +1,5 @@
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,7 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
+    [Authorize(Roles ="Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -38,6 +40,7 @@ public class UserController : ControllerBase
         return Ok(users);
     }
 
+    [Authorize(Roles ="Admin,User")]
     [HttpPut("{userId}")]
     public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserDto userDto)
     {
@@ -56,6 +59,8 @@ public class UserController : ControllerBase
         return Ok(updatedUser);
     }
 
+
+    [Authorize(Roles ="Admin")]
     [HttpDelete("{userId}")]
     public async Task<IActionResult> DeleteUser(int userId)
     {
@@ -67,6 +72,34 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
+
+    [HttpGet("get")]
+    public async Task<IActionResult> getUserDetails()
+    {
+        var user = GetCurrentUser();
+        if (user == null)
+        {
+            return NotFound();
+            
+        }
+        return Ok(user);
+    }
+    private UserDto GetCurrentUser()
+    {
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+        if (identity != null)
+        {
+            var userClaims = identity.Claims;
+            return new UserDto
+            {
+                UserId = int.Parse(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value!),
+                UserName = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value!,
+                Email = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value!,
+                Role = Enum.TryParse(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value, out UserRole role) ? role : UserRole.User
+            };
+        }
+        return null;
+    }
 
 }
 

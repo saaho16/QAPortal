@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using QAPortal.Business.Services;
 using QAPortal.Data.Enums;
 using QAPortal.Shared.DTOs.UserDtos;
+using System.Data.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -42,6 +43,7 @@ public class AuthController : ControllerBase
         return NotFound("user not found");
     }
 
+    [AllowAnonymous]
     [HttpPost("signup")]
     public async Task<IActionResult> SignUp([FromBody] UserRequestDto userDto)
     {
@@ -101,7 +103,7 @@ public class AuthController : ControllerBase
         var token = new JwtSecurityToken(_config["Jwt:Issuer"],
             _config["Jwt:Audience"],
             claims,
-            expires: DateTime.Now.AddMinutes(15),
+            expires: DateTime.Now.AddHours(1),
             signingCredentials: credentials);
 
 
@@ -128,7 +130,7 @@ public class AuthController : ControllerBase
         return null;
     }
 
-    /* private UserDto GetCurrentUser()
+    private UserDto GetCurrentUser()
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
         if (identity != null)
@@ -143,5 +145,5 @@ public class AuthController : ControllerBase
             };
         }
         return null;
-    } */
+    } 
 }
