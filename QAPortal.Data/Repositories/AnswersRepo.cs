@@ -17,14 +17,14 @@ public class AnswersRepo : IAnswersRepo
     }
     public async Task DeleteAsync(int Id)
     {
-        var answer =await _context.Answers.AsNoTracking().FirstOrDefaultAsync(a => a.Id == Id);
+        var answer = await _context.Answers.AsNoTracking().FirstOrDefaultAsync(a => a.Id == Id);
         if (answer != null)
             _context.Answers.Remove(answer);
 
         await _context.SaveChangesAsync();
     }
 
-  
+
     public IQueryable<AnswersEntity> GetAllAsync()
     {
         return _context.Answers.AsQueryable();
@@ -35,7 +35,7 @@ public class AnswersRepo : IAnswersRepo
         return _context.Answers.AsNoTracking().FirstOrDefaultAsync(a => a.Id == Id);
     }
 
-       public async Task<AnswersEntity?> InsertAsync(AnswersEntity Entity)
+    public async Task<AnswersEntity?> InsertAsync(AnswersEntity Entity)
     {
         await _context.Answers.AddAsync(Entity);
         await _context.SaveChangesAsync();

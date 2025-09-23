@@ -1,13 +1,11 @@
-using QAPortal.Data;
 using QAPortal.Business;
-using QAPortal.Business.Services;
 // using QAPortal.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using QAPortal.Data.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ExceptionFiltersDemo.Middlewares;
+using QAPortal.Presentation.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddLogging(logging => logging.AddConsole());
 
 //adding Cors
 builder.Services.AddCors(options =>
@@ -25,14 +24,6 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:4200")
               .AllowAnyMethod()
               .AllowAnyHeader();
-    });
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", builder =>
-    {
-        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
 
@@ -62,7 +53,6 @@ builder.Services.AddBusinessLayer(builder.Configuration.GetConnectionString("Def
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -73,11 +63,16 @@ if (app.Environment.IsDevelopment())
 //Adding Custom Middlewares
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+
+
 app.UseCors("AllowAngular");
-app.UseCors("AllowAll");
 
 
 app.UseAuthentication();
+
+//Jwt Decoder
+app.UseMiddleware<JwtUserMiddleware>();
+
 app.UseAuthorization();
 
 

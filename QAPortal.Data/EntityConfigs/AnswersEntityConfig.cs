@@ -23,20 +23,16 @@ public class AnswersEntityConfig : IEntityTypeConfiguration<AnswersEntity>
             .HasDefaultValueSql("GETDATE()");
 
 
-        builder.HasOne(a => a.Question)
-               .WithMany(q => q.Answers)
-               .HasForeignKey(a => a.QuestionId)
-               .IsRequired(false)
-               .OnDelete(DeleteBehavior.SetNull);
+        // builder.HasOne(a => a.Question)
+        //        .WithMany(q => q.Answers)
+        //        .HasForeignKey(a => a.QuestionId)
+        //        .IsRequired(false)
+        //        .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(a => a.CreatedUser)
                .WithMany()
                .HasForeignKey(a => a.CreatedBy)
                .IsRequired(false)
                .OnDelete(DeleteBehavior.SetNull);
-
-
-
-
     }
 }

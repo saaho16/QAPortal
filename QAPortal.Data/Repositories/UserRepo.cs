@@ -41,11 +41,13 @@ public class UserRepo : IUserRepo
 
     public async Task<UserEntity?> InsertAsync(UserEntity Entity)
     {
-        await _context.Users.AddAsync(Entity);
+        //do this to get the tracked entity with the generated id for all insert
+        //check why?
+        var trackedEntity = (await _context.Users.AddAsync(Entity)).Entity;
 
         await _context.SaveChangesAsync();
 
-        return Entity;
+        return trackedEntity;
     }
 
     public Task SaveAsync()

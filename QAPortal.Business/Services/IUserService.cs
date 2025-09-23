@@ -28,6 +28,13 @@ public interface IUserService
 
 public interface IApprovalService
 {
+    /// <summary>
+    /// Approve a user based on the provided approval details.
+    /// </summary>
+    /// <param name="approvalDto"></param>
+    /// <returns></returns>
+    
+    // Do this for all methods in interface level
     Task<ApprovalDto> ApproveUserAsync(ApprovalRequestDto approvalDto);
     Task<List<ApprovalDto>> GetApprovalByUserIdAsync(int userId);
 
@@ -35,9 +42,9 @@ public interface IApprovalService
 
     Task<List<ApprovalDto>> GetAllApprovalsAsync();
 
-    Task<List<ApprovalDto>> GetOnlylApprovedUsersAsync();
+    Task<List<ApprovalWithUserDto>> GetOnlylApprovedUsersAsync();
 
-    Task<List<ApprovalDto>> GetOnlylPendingUsersAsync();
+    Task<List<ApprovalWithUserDto>> GetOnlylPendingUsersAsync();
 
     Task<bool> IsUserApprovedAsync(int userId, ApprovalFor approvalFor);
 

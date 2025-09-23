@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using QAPortal.Data.Entities;
 using QAPortal.Data.Enums;
 using QAPortal.Data.Repositories;
@@ -42,19 +43,41 @@ public class ApprovalService : IApprovalService
 
     }
 
-    public async Task<List<ApprovalDto>> GetOnlylApprovedUsersAsync()
+    public async Task<List<ApprovalWithUserDto>> GetOnlylApprovedUsersAsync()
     {
-        var approvalsEntities = await _unitOfWork.Approvals.GetOnlylApprovedUsersAsync();
-        var approvalDtos = _mapper.Map<List<ApprovalDto>>(approvalsEntities);
-        return approvalDtos;
+        var approvals = _unitOfWork.Approvals.GetAllAsync(); ;
+        var approvalsWithUsers = approvals.Include(a => a.RequestedUser)
+            .Where(a => a.IsApproved)
+            .Select(a => new ApprovalWithUserDto
+            {
+                Id = a.Id,
+                UserId = a.UserId,
+                IsApproved = a.IsApproved,
+                ApprovedBy = a.ApprovedBy,
+                ApprovalFor = a.ApprovalFor,
+                UserName = a.RequestedUser.UserName
+            }).ToList();
+
+        return await Task.FromResult(approvalsWithUsers);
     }
 
-    public async Task<List<ApprovalDto>> GetOnlylPendingUsersAsync()
+    public async Task<List<ApprovalWithUserDto>> GetOnlylPendingUsersAsync()
     {
-        var approvalsEntities = _unitOfWork.Approvals.GetAllAsync().Where(a => !a.IsApproved);
-        var approvalDtos = _mapper.Map<List<ApprovalDto>>(approvalsEntities);
-        return approvalDtos;
+        var approvals = _unitOfWork.Approvals.GetAllAsync(); ;
+        var approvalsWithUsers = approvals.Include(a => a.RequestedUser)
+            .Where(a => !a.IsApproved)
+            .Select(a => new ApprovalWithUserDto
+            {
+                Id = a.Id,
+                UserId = a.UserId,
+                IsApproved = a.IsApproved,
+                ApprovedBy = a.ApprovedBy,
+                ApprovalFor = a.ApprovalFor,
+                UserName = a.RequestedUser.UserName
+            }).ToList();
 
+        return await Task.FromResult(approvalsWithUsers);
+       
     }
 
     public Task<bool> IsUserApprovedAsync(int userId, ApprovalFor approvalFor)

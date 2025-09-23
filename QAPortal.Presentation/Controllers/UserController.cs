@@ -1,5 +1,3 @@
-
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +30,7 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -40,17 +38,11 @@ public class UserController : ControllerBase
         return Ok(users);
     }
 
-    [Authorize(Roles ="Admin,User")]
+    [Authorize(Roles = "Admin,User")]
     [HttpPut("{userId}")]
     public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserDto userDto)
     {
-        // if (!ModelState.IsValid)
-        // {
-        //     return BadRequest(ModelState);
-        // }
-
         var updatedUser = await _userService.UpdateUserAsync(userDto);
-        System.Console.WriteLine(updatedUser);
         if (updatedUser == null)
         {
             return NotFound();
@@ -60,7 +52,7 @@ public class UserController : ControllerBase
     }
 
 
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{userId}")]
     public async Task<IActionResult> DeleteUser(int userId)
     {
@@ -80,10 +72,12 @@ public class UserController : ControllerBase
         if (user == null)
         {
             return NotFound();
-            
+
         }
         return Ok(user);
     }
+
+    //shift this to a base controller
     private UserDto GetCurrentUser()
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -99,6 +93,18 @@ public class UserController : ControllerBase
             };
         }
         return null;
+    }
+
+
+    //Testing (getting user from httpcontext items set by middleware)
+    [HttpGet("getFromItems")]
+    public IActionResult GetUserFromItems()
+    {
+        if (HttpContext.Items["currentUser"] is UserDto currentUser)
+        {
+            return Ok(currentUser);
+        }
+        return NotFound();
     }
 
 }

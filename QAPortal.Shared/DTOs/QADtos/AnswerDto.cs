@@ -25,4 +25,6 @@ public class AnswersWithQuestionNUSerDto
     public int? CreatedBy { get; set; }
     public string UserName { get; set; }
     public string QuestionTitle { get; set; }
+    public int? ModifiedBy { get; set; }
+
 }

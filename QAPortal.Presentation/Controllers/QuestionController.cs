@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QAPortal.Business.Services;
@@ -28,7 +27,7 @@ public class QuestionController : ControllerBase
         return Ok(question);
     }
     [HttpGet]
-    [Authorize(Roles = "Admin,User")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllQuestions()
     {
         var questions = await _questionService.GetAllQuestionsAsync();

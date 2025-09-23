@@ -36,6 +36,7 @@ public interface IAnswerService
 
 
     //Getting Answer with user details n Questions
+    Task<IEnumerable<AnswersWithQuestionNUSerDto>> GetAnswerWithQuestionNUserByUserIdAsync(int userId);    
     Task<IEnumerable<AnswersWithQuestionNUSerDto>> GetAllAnswersWithQuestionNUserAsync();
 
 

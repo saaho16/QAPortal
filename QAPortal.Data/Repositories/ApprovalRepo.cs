@@ -72,6 +72,7 @@ public class ApprovalRepo : IApprovalRepo
 
     public Task<List<ApprovalEntity>> GetOnlylApprovedUsersAsync()
     {
+
         return _context.Approvals.Where(a => a.IsApproved).ToListAsync();
     }
 }

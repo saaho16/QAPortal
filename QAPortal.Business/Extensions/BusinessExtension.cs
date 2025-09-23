@@ -17,6 +17,7 @@ namespace QAPortal.Business
             services.AddScoped<IApprovalService, ApprovalService>();
             services.AddScoped<IQuestionService, QuestionsService>();
             services.AddScoped<IAnswerService, AnswerService>();
+            services.AddScoped<IJWTServices, JWTService>();
 
             services.AddAutoMapper(cfg => cfg.AddProfile<UserMapper>());
             services.AddAutoMapper(cfg => cfg.AddProfile<QAMapper>());

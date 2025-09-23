@@ -6,9 +6,7 @@ public class AnswersEntity
 {
     public int Id { get; set; }
     public string Body { get; set; }
-    [ForeignKey("Question")]
     public int? QuestionId { get; set; }
-
     public int? CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

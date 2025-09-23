@@ -5,50 +5,43 @@ namespace QAPortal.Data.Repositories;
 
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
-    private readonly AppDbContext Context;
-    private IDbContextTransaction? _objTran = null;
+    private readonly AppDbContext _context;
+    private IDbContextTransaction? _transaction;
+    public IQuestionsRepo Questions { get; }
+    public IAnswersRepo Answers { get; }
+    public IUserRepo Users { get; }
+    public IApprovalRepo Approvals { get; }
 
-    public UserRepo Users { get; private set; }
-
-
-    public AnswersRepo Answers { get; private set; }
-
-    public QuestionsRepo Questions { get; private set; }
-
-
-    public ApprovalRepo Approvals { get; private set; }
-
-
-    public UnitOfWork(AppDbContext _Context)
+    public UnitOfWork(AppDbContext context, IQuestionsRepo questions, IAnswersRepo answers, IUserRepo users, IApprovalRepo approvals)
     {
-        Context = _Context;
-        Users = new UserRepo(Context);
-        Answers = new AnswersRepo(Context);
-        Questions = new QuestionsRepo(Context);
-        Approvals = new ApprovalRepo(Context);
+        _context = context;
+        Questions = questions;
+        Answers = answers;
+        Users = users;
+        Approvals = approvals;
     }
     public void CreateTransaction()
     {
-        _objTran = Context.Database.BeginTransaction();
+        _transaction = _context.Database.BeginTransaction();
     }
 
     public void Commit()
     {
-        _objTran?.Commit();
+        _transaction?.Commit();
     }
 
     public void Rollback()
     {
-        _objTran?.Rollback();
+        _transaction?.Rollback();
 
-        _objTran?.Dispose();
+        _transaction?.Dispose();
     }
 
     public async Task Save()
     {
         try
         {
-            await Context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
         catch (DbUpdateException ex)
         {
@@ -58,6 +51,6 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 
     public void Dispose()
     {
-        Context.Dispose();
+        _context.Dispose();
     }
 }

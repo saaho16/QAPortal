@@ -15,6 +15,7 @@ namespace QAPortal.Data
             services.AddScoped<IQuestionsRepo, QuestionsRepo>();
             services.AddScoped<IAnswersRepo, AnswersRepo>();
             services.AddScoped<IApprovalRepo, ApprovalRepo>();
+            services.AddScoped<IAnswersRepo, AnswersRepo>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;

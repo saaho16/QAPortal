@@ -94,7 +94,7 @@ public class AnswerService : IAnswerService
 
 
         var modifiedByUser = await _unitOfWork.Users.GetByIdAsync(answerDto.ModifiedBy ?? 0);
-        if (modifiedByUser != null && modifiedByUser.Role != UserRole.Admin && answerEntity.CreatedBy!= answerDto.ModifiedBy)
+        if (modifiedByUser != null && modifiedByUser.Role != UserRole.Admin && answerEntity.CreatedBy != answerDto.ModifiedBy)
         {
             throw new Exception("Only Admins And Creators can modify Answers");
         }
@@ -125,5 +125,25 @@ public class AnswerService : IAnswerService
 
 
         return result;
+    }
+
+    public Task<IEnumerable<AnswersWithQuestionNUSerDto>> GetAnswerWithQuestionNUserByUserIdAsync(int userId)
+    {
+        var answers = _unitOfWork.Answers.GetAllAsync().Where(a => a.CreatedBy == userId);
+        var result = answers.Include(a => a.CreatedUser)
+            .Include(a => a.Question)
+            .Select(a => new AnswersWithQuestionNUSerDto
+            {
+                Id = a.Id,
+                Body = a.Body,
+                QuestionId = a.QuestionId,
+                CreatedBy = a.CreatedBy,
+                UserName = a.CreatedUser != null ? a.CreatedUser.UserName : "Unknown",
+                QuestionTitle = a.Question != null ? a.Question.Title : "Unknown",
+                //check this modify by later (if time permits)
+                ModifiedBy = a.ModifiedBy
+            }).AsEnumerable();
+
+        return Task.FromResult(result);
     }
 }
